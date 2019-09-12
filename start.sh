@@ -7,13 +7,15 @@
 # Author: alex
 # Created Time: 2019年09月12日 星期四 10时13分07秒
 cmd=$*
+args="-d"
 if [ $# -le 2 ]; then
     cmd="$* /bin/bash"
+    args="-ti"
 fi
 echo "Command: $cmd"
 
 docker rm -f ibbd-yolov3
-docker run --rm -d --runtime=nvidia --name ibbd-yolov3 \
+docker run --rm "$args" --runtime=nvidia --name ibbd-yolov3 \
     -p 20950:20950 \
     -v `pwd`:/yolov3 \
     -e PYTHONIOENCODING=utf-8 \
