@@ -11,34 +11,34 @@ from PIL import Image
 import numpy as np
 
 
-def parse_input_image(pic='', pic_path='', image_type='jpg'):
+def parse_input_image(image='', image_path='', image_type='jpg'):
     """人脸检测（输入的是base64编码的图像）
-    :param pic 图片对象使用base64编码
-    :param pic_path 图片路径
+    :param image 图片对象使用base64编码
+    :param image_path 图片路径
     :param image_type 输入图像类型, 取值jpg或者png
     :return image
     """
-    if not pic and not pic_path:
-        raise Exception('pic参数和pic_path参数必须有一个不为空')
+    if not image and not image_path:
+        raise Exception('image参数和image_path参数必须有一个不为空')
 
-    if pic:
+    if image:
         # 自动判断类型
-        type_str = re.findall('^data:image/.+;base64,', pic)
+        type_str = re.findall('^data:image/.+;base64,', image)
         if len(type_str) > 0:
             if 'png' in type_str[0]:
                 image_type = 'png'
 
-        pic = re.sub('^data:image/.+;base64,', '', pic)
-        pic = base64.b64decode(pic)
-        pic = Image.open(io.BytesIO(pic))
+        image = re.sub('^data:image/.+;base64,', '', image)
+        image = base64.b64decode(image)
+        image = Image.open(io.BytesIO(image))
         if image_type == 'png':   # 先转化为jpg
-            bg = Image.new("RGB", pic.size, (255, 255, 255))
-            bg.paste(pic, pic)
-            pic = bg
+            bg = Image.new("RGB", image.size, (255, 255, 255))
+            bg.paste(image, image)
+            image = bg
 
-        return pic
+        return image
 
-    return Image.open(pic_path)
+    return Image.open(image_path)
 
 
 def parse_output_image(out_img):

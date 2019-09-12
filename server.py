@@ -13,14 +13,15 @@ common_config = {
 }
 
 
-def common_image(pic='', pic_path='', image_type='jpg',):
+def common_image(image='', image_path='', image_type='jpg'):
     """通用目标检测
-    :param pic 图片对象使用base64编码
-    :param pic_path 图片路径
+    :param image 图片对象使用base64编码
+    :param image_path 图片路径
     :param image_type 输入图像类型, 取值jpg或者png
     :return dict
     """
-    img = parse_input_image(pic=pic, pic_path=pic_path, image_type=image_type)
+    img = parse_input_image(image=image, image_path=image_path,
+                            image_type=image_type)
     yolo = YOLO(**common_config)
     out_img, data = yolo.detect_image(img)
     yolo.close_session()
