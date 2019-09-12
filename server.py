@@ -32,4 +32,4 @@ def common_image(pic='', pic_path='', image_type='jpg',):
 if __name__ == '__main__':
     from fireRest import API, app
     API(common_image)
-    app.run(port=20950, host='0.0.0.0')
+    app.run(port=20960, host='0.0.0.0', debug=True)
