@@ -25,8 +25,12 @@ def common_image(pic='', pic_path='', image_type='jpg',):
     yolo.close_session()
 
     out_img = add_logo(out_img)
-    data['pic'] = parse_output_image(out_img)
-    return data
+    return {
+        'pic': parse_output_image(out_img),
+        'boxes': data['boxes'].tolist(),
+        'classes': data['classes'].tolist(),
+        'scores': data['scores'].tolist(),
+    }
 
 
 if __name__ == '__main__':
