@@ -3,6 +3,7 @@
 #
 # Author: alex
 # Created Time: 2019年09月11日 星期三 18时12分55秒
+from PIL import Image
 from yolo import YOLO
 from utils import parse_input_image, parse_output_image, add_logo
 
@@ -26,10 +27,20 @@ def common_image(pic='', pic_path='', image_type='jpg',):
 
     out_img = add_logo(out_img)
     return {
-        'pic': parse_output_image(out_img),
-        'boxes': data['boxes'].tolist(),
-        'classes': data['classes'].tolist(),
-        'scores': data['scores'].tolist(),
+        'image': parse_output_image(out_img),
+        'data': {
+            'boxes': data['boxes'].tolist(),
+            'classes': data['classes'].tolist(),
+            'scores': data['scores'].tolist(),
+        }
+    }
+
+
+def get_common_image(path):
+    """获取演示图片"""
+    img = Image.open(path)
+    return {
+        'image': parse_output_image(img)
     }
 
 
