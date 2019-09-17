@@ -63,7 +63,7 @@ def do_detect_image(detect_cfg, image='', image_path='', image_type='jpg'):
     }
 
 
-def get_common_image(path):
+def get_demo_image(path):
     """获取演示图片"""
     img = Image.open(path)
     return {
@@ -74,4 +74,5 @@ def get_common_image(path):
 if __name__ == '__main__':
     from fireRest import API, app
     API(detect_image)
+    API(get_demo_image)
     app.run(port=20960, host='0.0.0.0', debug=True)
