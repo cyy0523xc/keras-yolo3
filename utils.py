@@ -9,6 +9,31 @@ import cv2
 import base64
 from PIL import Image
 import numpy as np
+from os import environ
+from os.path import join, isfile, isdir
+
+# 可以通过环境变量来指定跟目录
+if 'VIDEO_ROOT_PATH' in environ:
+    root_path = environ['VIDEO_ROOT_PATH']
+    if not root_path.endswith('/'):
+        root_path += '/'
+else:
+    root_path = '/data/'
+
+
+def format_input_path(path):
+    """格式化输入路径"""
+    full_path = join(root_path, path)
+    if isfile(full_path) or isdir(full_path):
+        return full_path
+    raise Exception('错误的路径：' + path)
+
+
+def format_output_path(path):
+    """格式化输出的文件地址"""
+    if path.startswith(root_path):
+        return path[len(root_path):]
+    return path
 
 
 def parse_input_image(image='', image_path='', image_type='jpg'):
