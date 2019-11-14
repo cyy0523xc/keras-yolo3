@@ -33,7 +33,7 @@ detect_classes = {}
 for key, val in detect_configs.items():
     with open(val['classes_path']) as f:
         detect_classes[key] = [t.strip() for t in f.readlines()
-                               if len(t.strip) > 0]
+                               if len(t.strip()) > 0]
 
 
 def detect_images(filenames, classes=None):
