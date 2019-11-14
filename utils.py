@@ -21,6 +21,15 @@ if 'VIDEO_ROOT_PATH' in environ:
 else:
     root_path = '/data/'
 
+# 测试标志
+is_debug = False
+
+
+def debug_print(*msg):
+    """测试print"""
+    if is_debug:
+        print(*msg)
+
 
 def format_input_path(path):
     """格式化输入路径"""
