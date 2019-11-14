@@ -109,4 +109,4 @@ if __name__ == '__main__':
     API(detect_images)
     API(detect_image)
     API(get_demo_image)
-    app.run(port=20960, host='0.0.0.0', debug=True)
+    app.run(port=20920, host='0.0.0.0', debug=True)

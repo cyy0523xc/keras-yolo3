@@ -16,7 +16,7 @@ echo "Command: $cmd"
 
 docker rm -f ibbd-yolov3
 docker run --rm "$args" --runtime=nvidia --name ibbd-yolov3 \
-    -p 20970:20960 \
+    -p 20922:20920 \
     -v `pwd`:/yolov3 \
     -e PYTHONIOENCODING=utf-8 \
     -w /yolov3 \
