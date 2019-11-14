@@ -14,6 +14,7 @@ detect_configs = {
     # 通用目标检测
     'common': {
         'model_path': 'model_data/yolov3-spp.h5',
+        'classes_path': 'model_data/coco_classes.txt',
     },
     # GF Logo&证件识别
     'card': {
