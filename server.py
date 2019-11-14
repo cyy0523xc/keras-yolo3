@@ -32,7 +32,8 @@ detect_configs = {
 detect_classes = {}
 for key, val in detect_configs.items():
     with open(val['classes_path']) as f:
-        detect_classes[key] = f.readlines()
+        detect_classes[key] = [t.strip() for t in f.readlines()
+                               if len(t.strip) > 0]
 
 
 def detect_images(filenames, classes=None):
@@ -59,6 +60,7 @@ def detect_images(filenames, classes=None):
             # 默认全部数据
             cond = np.array([True] * len(data['tags']))
 
+        data['tags'] = np.array(data['tags'])
         res.append({
             'boxes': data['boxes'][cond].tolist(),
             'classes': data['tags'][cond].tolist(),
