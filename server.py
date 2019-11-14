@@ -105,8 +105,10 @@ def get_demo_image(path):
 
 
 if __name__ == '__main__':
-    from fireRest import API, app
-    API(detect_images)
-    API(detect_image)
-    API(get_demo_image)
-    app.run(port=20920, host='0.0.0.0', debug=True)
+    import sys
+    if sys.argv[1] == 'image':
+        res = detect_image(image_path=sys.argv[2])
+        print(res)
+    elif sys.argv[1] == 'images':
+        res = detect_images(sys.argv[2].split(';'))
+        print(res)
