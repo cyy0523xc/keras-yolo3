@@ -12,6 +12,7 @@ import numpy as np
 from os import environ
 from os.path import join, isfile, isdir
 
+# 数据存储的根目录
 # 可以通过环境变量来指定跟目录
 if 'VIDEO_ROOT_PATH' in environ:
     root_path = environ['VIDEO_ROOT_PATH']
