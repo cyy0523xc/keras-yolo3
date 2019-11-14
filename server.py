@@ -48,7 +48,7 @@ def detect_images(filenames, classes=None):
         image_type = 'png' if path.lower().endswith('.png') else 'jpg'
         path = format_input_path(path)
         img = parse_input_image(image_path=path, image_type=image_type)
-        out_img, data = yolo.detect_image(img)
+        _, data = yolo.detect_image(img)
 
         # 格式化返回类别值
         data['tags'] = format_classes(data['classes'], detect_classes['card'])
@@ -99,7 +99,7 @@ def do_detect_image(detect_cfg, image='', image_path='', image_type='jpg'):
     img = parse_input_image(image=image, image_path=image_path,
                             image_type=image_type)
     yolo = YOLO(**detect_cfg)
-    out_img, data = yolo.detect_image(img)
+    out_img, data = yolo.detect_image(img, out_img=True)
     yolo.close_session()
 
     out_img = add_logo(out_img)

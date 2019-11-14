@@ -121,7 +121,10 @@ class YOLO(object):
                                            iou_threshold=self.iou)
         return boxes, scores, classes
 
-    def detect_image(self, image):
+    def detect_image(self, image, out_img=False):
+        """
+        :param out_img 是否输出图片
+        """
         start = timer()
 
         if self.model_image_size != (None, None):
@@ -150,6 +153,8 @@ class YOLO(object):
             'scores': out_scores,
             'classes': out_classes,
         }
+        if out_img is False:
+            return None, res_data
 
         print('Found {} boxes for {}'.format(len(out_boxes), 'img'))
 
