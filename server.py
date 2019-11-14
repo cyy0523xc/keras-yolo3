@@ -27,6 +27,12 @@ detect_configs = {
     }
 }
 
+# 获取目标类别
+detect_classes = {}
+for key, val in detect_configs.items():
+    with open(val['classes_path']) as f:
+        detect_classes[key] = f.readlines()
+
 
 def detect_images(filenames, classes=None):
     """检测多个图片
@@ -42,16 +48,19 @@ def detect_images(filenames, classes=None):
         img = parse_input_image(image_path=path, image_type=image_type)
         out_img, data = yolo.detect_image(img)
 
+        # 格式化返回类别值
+        data['tags'] = format_classes(data['classes'], detect_classes['card'])
+
         if classes is not None:
             # 只保留需要的数据
-            cond = np.array([i in classes for i in data['classes']])
+            cond = np.array([i in classes for i in data['tags']])
         else:
             # 默认全部数据
-            cond = np.array([True] * len(data['classes']))
+            cond = np.array([True] * len(data['tags']))
 
         res.append({
             'boxes': data['boxes'][cond].tolist(),
-            'classes': data['classes'][cond].tolist(),
+            'classes': data['tags'][cond].tolist(),
             'scores': data['scores'][cond].tolist(),
         })
 
@@ -67,8 +76,13 @@ def detect_image(image='', image_path='', image_type='jpg',
     :param image_type 输入图像类型, 取值jpg或者png
     :return dict
     """
-    return do_detect_image(detect_configs[detect_type], image=image,
-                           image_path=image_path, image_type=image_type)
+    if image_path != '':
+        image_path = format_input_path(image_path)
+    res = do_detect_image(detect_configs[detect_type], image=image,
+                          image_path=image_path, image_type=image_type)
+    res['data']['classes'] = format_classes(res['data']['classes'],
+                                            detect_classes[detect_type])
+    return res
 
 
 def do_detect_image(detect_cfg, image='', image_path='', image_type='jpg'):
@@ -102,6 +116,11 @@ def get_demo_image(path):
     return {
         'image': parse_output_image(img)
     }
+
+
+def format_classes(classes, config):
+    """返回适合人类阅读的类别属性"""
+    return [config[c] for c in classes]
 
 
 if __name__ == '__main__':
