@@ -18,15 +18,15 @@ from yolo3.utils import letterbox_image
 from keras.utils import multi_gpu_model
 from utils import debug_print
 
+# RuntimeError: The Session graph is empty.
+# Add operations to the graph before calling run().
+graph = tf.get_default_graph()
+
 # GPU版的tensorflow在模型训练时遇到Blas GEMM launch failed错误，或者keras遇到相同错误
 # 这是调用GPU时，显存分配遇到了问题，可能是其他程序先占用了显存
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
-session = tf.Session(config=config)
-
-# RuntimeError: The Session graph is empty.
-# Add operations to the graph before calling run().
-graph = tf.get_default_graph()
+session = tf.Session(config=config, graph=graph)
 
 
 class YOLO(object):
@@ -146,15 +146,14 @@ class YOLO(object):
         image_data /= 255.
         image_data = np.expand_dims(image_data, 0)  # Add batch dimension.
 
-        out_boxes, out_scores, out_classes = None, None, None
-        with graph.as_default():
-            out_boxes, out_scores, out_classes = self.sess.run(
-                [self.boxes, self.scores, self.classes],
-                feed_dict={
-                    self.yolo_model.input: image_data,
-                    self.input_image_shape: [image.size[1], image.size[0]],
-                    K.learning_phase(): 0
-                })
+        # out_boxes, out_scores, out_classes = None, None, None
+        out_boxes, out_scores, out_classes = self.sess.run(
+            [self.boxes, self.scores, self.classes],
+            feed_dict={
+                self.yolo_model.input: image_data,
+                self.input_image_shape: [image.size[1], image.size[0]],
+                K.learning_phase(): 0
+            })
 
         res_data = {
             'boxes': out_boxes,
