@@ -18,6 +18,12 @@ from yolo3.utils import letterbox_image
 from keras.utils import multi_gpu_model
 from utils import debug_print
 
+# GPU版的tensorflow在模型训练时遇到Blas GEMM launch failed错误，或者keras遇到相同错误
+# 这是调用GPU时，显存分配遇到了问题，可能是其他程序先占用了显存
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.Session(config=config)
+
 
 class YOLO(object):
     _defaults = {
@@ -43,12 +49,6 @@ class YOLO(object):
         self.__dict__.update(kwargs)  # and update with user overrides
         self.class_names = self._get_class()
         self.anchors = self._get_anchors()
-
-        # GPU版的tensorflow在模型训练时遇到Blas GEMM launch failed错误，或者keras遇到相同错误
-        # 这是调用GPU时，显存分配遇到了问题，可能是其他程序先占用了显存
-        config = tf.ConfigProto()
-        config.gpu_options.allow_growth = True
-        session = tf.Session(config=config)
         K.set_session(session)
         self.sess = K.get_session()
         self.boxes, self.scores, self.classes = self.generate()
