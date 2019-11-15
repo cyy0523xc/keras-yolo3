@@ -43,6 +43,7 @@ def detect_images(filenames, classes=None):
     """检测多个图片
     :param filenames 文件名列表
     :param classes 需要检测的对象分类列表
+    :return
     """
     res = []    # 保存结果数据
 
@@ -64,7 +65,7 @@ def detect_images(filenames, classes=None):
 
         data['tags'] = np.array(data['tags'])
         res.append({
-            'boxes': data['boxes'][cond].tolist(),
+            'boxes': format_boxes(data['boxes'][cond].tolist()),
             'classes': data['tags'][cond].tolist(),
             'scores': data['scores'][cond].tolist(),
         })
@@ -86,6 +87,7 @@ def detect_image(image='', image_path='', image_type='jpg',
                           image_path=image_path, image_type=image_type)
     res['data']['classes'] = format_classes(res['data']['classes'],
                                             detect_classes[detect_type])
+    res['data']['boxes'] = format_boxes(res['data']['boxes'])
     return res
 
 
@@ -123,6 +125,13 @@ def get_demo_image(path):
 def format_classes(classes, config):
     """返回适合人类阅读的类别属性"""
     return [config[c] for c in classes]
+
+
+def format_boxes(boxes):
+    """boxes数据格式转化
+    top, left, bottom, right ==> x, y, xb, yb
+    """
+    return [[left, top, right, bottom] for top, left, bottom, right in boxes]
 
 
 if __name__ == '__main__':
