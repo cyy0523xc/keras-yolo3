@@ -20,6 +20,7 @@ from utils import debug_print
 
 # RuntimeError: The Session graph is empty.
 # Add operations to the graph before calling run().
+# graph = tf.Graph()
 graph = tf.get_default_graph()
 
 # GPU版的tensorflow在模型训练时遇到Blas GEMM launch failed错误，或者keras遇到相同错误

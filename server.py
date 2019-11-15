@@ -35,6 +35,9 @@ for key, val in detect_configs.items():
         detect_classes[key] = [t.strip() for t in f.readlines()
                                if len(t.strip()) > 0]
 
+# 预加载模型
+yolo = YOLO(**detect_configs['card'])
+
 
 def detect_images(filenames, classes=None):
     """检测多个图片
@@ -42,7 +45,6 @@ def detect_images(filenames, classes=None):
     :param classes 需要检测的对象分类列表
     """
     res = []    # 保存结果数据
-    yolo = YOLO(**detect_configs['card'])
 
     for path in filenames:
         image_type = 'png' if path.lower().endswith('.png') else 'jpg'
