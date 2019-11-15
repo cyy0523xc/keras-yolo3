@@ -207,8 +207,8 @@ class YOLO(object):
         debug_print(end - start)
         return image, res_data
 
-    def close_session(self):
-        self.sess.close()
+    # def close_session(self):
+        # self.sess.close()
 
 
 def detect_video(yolo, video_path, output_path=""):
@@ -251,4 +251,4 @@ def detect_video(yolo, video_path, output_path=""):
             out.write(result)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-    yolo.close_session()
+    # yolo.close_session()
