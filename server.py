@@ -69,7 +69,6 @@ def detect_images(filenames, classes=None):
             'scores': data['scores'][cond].tolist(),
         })
 
-    # yolo.close_session()
     return res
 
 
@@ -100,9 +99,7 @@ def do_detect_image(detect_cfg, image='', image_path='', image_type='jpg'):
     """
     img = parse_input_image(image=image, image_path=image_path,
                             image_type=image_type)
-    # yolo = YOLO(**detect_cfg)
     out_img, data = yolo.detect_image(img, out_img=True)
-    # yolo.close_session()
 
     out_img = add_logo(out_img)
     return {
