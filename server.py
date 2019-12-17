@@ -87,7 +87,7 @@ def detect_image(image='', image_path='', image_type='jpg',
                             image_type=image_type)
     out_img, data = yolo.detect_image(img, out_img=True)
     return {
-        'image': add_logo(out_img) if return_img else None,
+        'image': parse_output_image(add_logo(out_img)) if return_img else None,
         'bboxes': format_bboxes(data['bboxes'].tolist()),
         'scores': data['scores'].tolist(),
         'classes': format_classes(data['classes'].tolist(),
