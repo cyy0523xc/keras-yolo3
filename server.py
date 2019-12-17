@@ -64,7 +64,7 @@ def detect_images(filenames, classes=None):
 
         data['tags'] = np.array(data['tags'])
         res.append({
-            'boxes': format_boxes(data['boxes'][cond].tolist()),
+            'bboxes': format_bboxes(data['bboxes'][cond].tolist()),
             'classes': data['tags'][cond].tolist(),
             'scores': data['scores'][cond].tolist(),
         })
@@ -88,7 +88,7 @@ def detect_image(image='', image_path='', image_type='jpg',
     out_img, data = yolo.detect_image(img, out_img=True)
     return {
         'image': add_logo(out_img) if return_img else None,
-        'boxes': format_boxes(data['boxes'].tolist()),
+        'bboxes': format_bboxes(data['bboxes'].tolist()),
         'scores': data['scores'].tolist(),
         'classes': format_classes(data['classes'].tolist(),
                                   detect_classes[detect_type]),
@@ -108,11 +108,11 @@ def format_classes(classes, config):
     return [config[c] for c in classes]
 
 
-def format_boxes(boxes):
-    """boxes数据格式转化
+def format_bboxes(bboxes):
+    """bboxes数据格式转化
     top, left, bottom, right ==> x, y, xb, yb
     """
-    return [[left, top, right, bottom] for top, left, bottom, right in boxes]
+    return [[left, top, right, bottom] for top, left, bottom, right in bboxes]
 
 
 if __name__ == '__main__':

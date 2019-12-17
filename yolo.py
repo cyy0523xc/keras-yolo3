@@ -56,7 +56,7 @@ class YOLO(object):
         self.anchors = self._get_anchors()
         K.set_session(session)
         self.sess = K.get_session()
-        self.boxes, self.scores, self.classes = self.generate()
+        self.bboxes, self.scores, self.classes = self.generate()
 
     def _get_class(self):
         classes_path = os.path.expanduser(self.classes_path)
@@ -103,7 +103,7 @@ class YOLO(object):
 
         debug_print('{} model, anchors, and classes loaded.'.format(model_path))
 
-        # Generate colors for drawing bounding boxes.
+        # Generate colors for drawing bounding bboxes.
         hsv_tuples = [(x / len(self.class_names), 1., 1.)
                       for x in range(len(self.class_names))]
         self.colors = list(map(lambda x: colorsys.hsv_to_rgb(*x), hsv_tuples))
@@ -114,18 +114,18 @@ class YOLO(object):
         np.random.shuffle(self.colors)  # Shuffle colors to decorrelate adjacent classes.
         np.random.seed(None)  # Reset seed to default.
 
-        # Generate output tensor targets for filtered bounding boxes.
+        # Generate output tensor targets for filtered bounding bboxes.
         self.input_image_shape = K.placeholder(shape=(2, ))
         if self.gpu_num >= 2:
             self.yolo_model = multi_gpu_model(self.yolo_model,
                                               gpus=self.gpu_num)
-        boxes, scores, classes = yolo_eval(self.yolo_model.output,
+        bboxes, scores, classes = yolo_eval(self.yolo_model.output,
                                            self.anchors,
                                            len(self.class_names),
                                            self.input_image_shape,
                                            score_threshold=self.score,
                                            iou_threshold=self.iou)
-        return boxes, scores, classes
+        return bboxes, scores, classes
 
     def detect_image(self, image, out_img=False):
         """
@@ -147,10 +147,10 @@ class YOLO(object):
         image_data /= 255.
         image_data = np.expand_dims(image_data, 0)  # Add batch dimension.
 
-        out_boxes, out_scores, out_classes = None, None, None
+        out_bboxes, out_scores, out_classes = None, None, None
         with graph.as_default():
-            out_boxes, out_scores, out_classes = self.sess.run(
-                [self.boxes, self.scores, self.classes],
+            out_bboxes, out_scores, out_classes = self.sess.run(
+                [self.bboxes, self.scores, self.classes],
                 feed_dict={
                     self.yolo_model.input: image_data,
                     self.input_image_shape: [image.size[1], image.size[0]],
@@ -158,14 +158,14 @@ class YOLO(object):
                 })
 
         res_data = {
-            'boxes': out_boxes,
+            'bboxes': out_bboxes,
             'scores': out_scores,
             'classes': out_classes,
         }
         if out_img is False:
             return None, res_data
 
-        debug_print('Found {} boxes for {}'.format(len(out_boxes), 'img'))
+        debug_print('Found {} bboxes for {}'.format(len(out_bboxes), 'img'))
 
         font = ImageFont.truetype(font='font/FiraMono-Medium.otf',
                                   size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
@@ -173,7 +173,7 @@ class YOLO(object):
 
         for i, c in reversed(list(enumerate(out_classes))):
             predicted_class = self.class_names[c]
-            box = out_boxes[i]
+            box = out_bboxes[i]
             score = out_scores[i]
 
             label = '{} {:.2f}'.format(predicted_class, score)
