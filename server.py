@@ -74,7 +74,7 @@ def detect_images(filenames, classes=None):
 
 
 def detect_image(image='', image_path='', image_type='jpg',
-                 detect_type='common'):
+                 detect_type='common', return_img=False):
     """通用目标检测
     :param image 图片对象使用base64编码
     :param image_path 图片路径
@@ -83,34 +83,16 @@ def detect_image(image='', image_path='', image_type='jpg',
     """
     if image_path != '':
         image_path = format_input_path(image_path)
-    res = do_detect_image(detect_configs[detect_type], image=image,
-                          image_path=image_path, image_type=image_type)
-    res['data']['classes'] = format_classes(res['data']['classes'],
-                                            detect_classes[detect_type])
-    res['data']['boxes'] = format_boxes(res['data']['boxes'])
-    return res
 
-
-def do_detect_image(detect_cfg, image='', image_path='', image_type='jpg'):
-    """目标检测
-    :param detect_cfg 检测配置
-    :param image 图片对象使用base64编码
-    :param image_path 图片路径
-    :param image_type 输入图像类型, 取值jpg或者png
-    :return dict
-    """
     img = parse_input_image(image=image, image_path=image_path,
                             image_type=image_type)
     out_img, data = yolo.detect_image(img, out_img=True)
-
-    out_img = add_logo(out_img)
     return {
-        'image': parse_output_image(out_img),
-        'data': {
-            'boxes': data['boxes'].tolist(),
-            'classes': data['classes'].tolist(),
-            'scores': data['scores'].tolist(),
-        }
+        'image': add_logo(out_img) if return_img else None,
+        'boxes': data['boxes'].tolist(),
+        'classes': format_classes(data['classes'],
+                                  detect_classes[detect_type]),
+        'scores': format_boxes(res['data']['boxes']),
     }
 
 
