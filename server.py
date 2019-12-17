@@ -72,6 +72,37 @@ def detect_images(filenames, classes=None):
     return res
 
 
+def detect_b64s(b64_list, classes=None):
+    """检测多个图片
+    :param b64_list 文件base64列表
+    :param classes 需要检测的对象分类列表
+    :return
+    """
+    res = []    # 保存结果数据
+    images = [parse_input_image(image=b64) for b64 in b64_list]
+    for img in images:
+        _, data = yolo.detect_image(img)
+
+        # 格式化返回类别值
+        data['tags'] = format_classes(data['classes'], detect_classes['card'])
+
+        if classes is not None:
+            # 只保留需要的数据
+            cond = np.array([i in classes for i in data['tags']])
+        else:
+            # 默认全部数据
+            cond = np.array([True] * len(data['tags']))
+
+        data['tags'] = np.array(data['tags'])
+        res.append({
+            'bboxes': format_bboxes(data['bboxes'][cond].tolist()),
+            'classes': data['tags'][cond].tolist(),
+            'scores': data['scores'][cond].tolist(),
+        })
+
+    return res
+
+
 def detect_image(image='', image_path='', image_type='jpg',
                  detect_type='common', return_img=False):
     """通用目标检测
