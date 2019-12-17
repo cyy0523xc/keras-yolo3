@@ -51,6 +51,13 @@ def detect_images(filenames, classes=None):
         path = format_input_path(path)
         img = parse_input_image(image_path=path, image_type=image_type)
         _, data = yolo.detect_image(img)
+        if data['bboxes'] is None:
+            res.append({
+                'bboxes': [],
+                'classes': [],
+                'scores': [],
+            })
+            continue
 
         # 格式化返回类别值
         data['tags'] = format_classes(data['classes'], detect_classes['card'])
@@ -82,6 +89,13 @@ def detect_b64s(b64_list, classes=None):
     images = [parse_input_image(image=b64) for b64 in b64_list]
     for img in images:
         _, data = yolo.detect_image(img)
+        if data['bboxes'] is None:
+            res.append({
+                'bboxes': [],
+                'classes': [],
+                'scores': [],
+            })
+            continue
 
         # 格式化返回类别值
         data['tags'] = format_classes(data['classes'], detect_classes['card'])
@@ -117,6 +131,13 @@ def detect_image(image='', image_path='', image_type='jpg',
     img = parse_input_image(image=image, image_path=image_path,
                             image_type=image_type)
     out_img, data = yolo.detect_image(img, out_img=True)
+    if data['bboxes'] is None:
+        return {
+            'bboxes': [],
+            'classes': [],
+            'scores': [],
+        }
+
     return {
         'image': parse_output_image(add_logo(out_img)) if return_img else None,
         'bboxes': format_bboxes(data['bboxes'].tolist()),
