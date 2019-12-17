@@ -46,7 +46,6 @@ def detect_images(filenames, classes=None):
     :return
     """
     res = []    # 保存结果数据
-
     for path in filenames:
         image_type = 'png' if path.lower().endswith('.png') else 'jpg'
         path = format_input_path(path)
@@ -89,10 +88,10 @@ def detect_image(image='', image_path='', image_type='jpg',
     out_img, data = yolo.detect_image(img, out_img=True)
     return {
         'image': add_logo(out_img) if return_img else None,
-        'boxes': data['boxes'].tolist(),
+        'boxes': format_boxes(data['boxes']),
+        'scores': data['scores'].tolist(),
         'classes': format_classes(data['classes'],
                                   detect_classes[detect_type]),
-        'scores': format_boxes(res['data']['boxes']),
     }
 
 
