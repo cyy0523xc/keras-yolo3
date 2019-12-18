@@ -9,7 +9,7 @@ from yolo import YOLO
 from utils import parse_input_image, parse_output_image, add_logo, \
     format_input_path
 
-
+# 识别模型配置
 detect_configs = {
     # 通用目标检测
     'common': {
@@ -28,18 +28,20 @@ detect_configs = {
     }
 }
 
+# 定义启动使用的模型
+detect_config = detect_configs['card']
+
 # 获取目标类别
-detect_classes = {}
-for key, val in detect_configs.items():
-    with open(val['classes_path']) as f:
-        detect_classes[key] = [t.strip() for t in f.readlines()
-                               if len(t.strip()) > 0]
+detect_classes = []
+with open(detect_config['classes_path']) as f:
+    detect_classes = [t.strip() for t in f.readlines()
+                      if len(t.strip()) > 0]
 
 # 预加载模型
-yolo = YOLO(**detect_configs['card'])
+yolo = YOLO(**detect_config)
 
 
-def detect_images(filenames, classes=None):
+def detect_images(filenames, classes=None): 
     """检测多个图片
     :param filenames 文件名列表
     :param classes 需要检测的对象分类列表
@@ -60,7 +62,7 @@ def detect_images(filenames, classes=None):
             continue
 
         # 格式化返回类别值
-        data['tags'] = format_classes(data['classes'], detect_classes['card'])
+        data['tags'] = format_classes(data['classes'])
 
         if classes is not None:
             # 只保留需要的数据
@@ -98,7 +100,7 @@ def detect_b64s(b64_list, classes=None):
             continue
 
         # 格式化返回类别值
-        data['tags'] = format_classes(data['classes'], detect_classes['card'])
+        data['tags'] = format_classes(data['classes'])
 
         if classes is not None:
             # 只保留需要的数据
@@ -117,8 +119,7 @@ def detect_b64s(b64_list, classes=None):
     return res
 
 
-def detect_image(image='', image_path='', image_type='jpg',
-                 detect_type='common', return_img=False):
+def detect_image(image='', image_path='', image_type='jpg', return_img=False):
     """通用目标检测
     :param image 图片对象使用base64编码
     :param image_path 图片路径
@@ -142,8 +143,7 @@ def detect_image(image='', image_path='', image_type='jpg',
         'image': parse_output_image(add_logo(out_img)) if return_img else None,
         'bboxes': format_bboxes(data['bboxes'].tolist()),
         'scores': data['scores'].tolist(),
-        'classes': format_classes(data['classes'].tolist(),
-                                  detect_classes[detect_type]),
+        'classes': format_classes(data['classes'].tolist()),
     }
 
 
@@ -155,9 +155,9 @@ def get_demo_image(path):
     }
 
 
-def format_classes(classes, config):
+def format_classes(classes):
     """返回适合人类阅读的类别属性"""
-    return [config[c] for c in classes]
+    return [detect_classes[c] for c in classes]
 
 
 def format_bboxes(bboxes):
