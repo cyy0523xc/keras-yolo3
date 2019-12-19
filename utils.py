@@ -71,9 +71,19 @@ def parse_input_image(image='', image_path='', image_type='jpg'):
             bg.paste(image, image)
             image = bg
 
-        return image
+        return crop_half(image)
 
-    return Image.open(image_path)
+    image = Image.open(image_path)
+    return crop_half(image)
+
+    
+def crop_half(image):
+    w, h = image.size
+    if w/h > 2.5:
+        image = image.crop((0, 0, w//2, h))
+
+    return image
+    
 
 
 def parse_output_image(out_img):

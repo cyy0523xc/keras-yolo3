@@ -53,30 +53,23 @@ def detect_images(filenames, classes=None):
         path = format_input_path(path)
         img = parse_input_image(image_path=path, image_type=image_type)
         _, data = yolo.detect_image(img)
+        row = {
+            'bboxes': [],
+            'classes': [],
+            'scores': [],
+        }
         if data['bboxes'] is None:
-            res.append({
-                'bboxes': [],
-                'classes': [],
-                'scores': [],
-            })
+            res.append(row)
             continue
 
-        # 格式化返回类别值
-        data['tags'] = format_classes(data['classes'])
+        for box, cs, score in zip(data['bboxes'], data['classes'], data['scores']):
+            if cs not in classes:
+                continue
+            row['bboxes'].append(box)
+            row['classes'].append(cs)
+            row['scores'].append(score)
 
-        if classes is not None:
-            # 只保留需要的数据
-            cond = np.array([i in classes for i in data['tags']])
-        else:
-            # 默认全部数据
-            cond = np.array([True] * len(data['tags']))
-
-        data['tags'] = np.array(data['tags'])
-        res.append({
-            'bboxes': format_bboxes(data['bboxes'][cond].tolist()),
-            'classes': data['tags'][cond].tolist(),
-            'scores': data['scores'][cond].tolist(),
-        })
+        res.append(row)
 
     return res
 
@@ -91,30 +84,23 @@ def detect_b64s(b64_list, classes=None):
     images = [parse_input_image(image=b64) for b64 in b64_list]
     for img in images:
         _, data = yolo.detect_image(img)
+        row = {
+            'bboxes': [],
+            'classes': [],
+            'scores': [],
+        }
         if data['bboxes'] is None:
-            res.append({
-                'bboxes': [],
-                'classes': [],
-                'scores': [],
-            })
+            res.append(row)
             continue
 
-        # 格式化返回类别值
-        data['tags'] = format_classes(data['classes'])
+        for box, cs, score in zip(data['bboxes'], data['classes'], data['scores']):
+            if cs not in classes:
+                continue
+            row['bboxes'].append(box)
+            row['classes'].append(cs)
+            row['scores'].append(score)
 
-        if classes is not None:
-            # 只保留需要的数据
-            cond = np.array([i in classes for i in data['tags']])
-        else:
-            # 默认全部数据
-            cond = np.array([True] * len(data['tags']))
-
-        data['tags'] = np.array(data['tags'])
-        res.append({
-            'bboxes': format_bboxes(data['bboxes'][cond].tolist()),
-            'classes': data['tags'][cond].tolist(),
-            'scores': data['scores'][cond].tolist(),
-        })
+        res.append(row)
 
     return res
 
