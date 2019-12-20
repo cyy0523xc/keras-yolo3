@@ -61,6 +61,8 @@ def detect_images(filenames, classes=None):
             res.append(row)
             continue
 
+        data['bboxes'] = data['bboxes'].tolist()
+        data['scores'] = data['scores'].tolist()
         data['classes'] = format_classes(data['classes'].tolist())
         for box, cs, score in zip(data['bboxes'], data['classes'], data['scores']):
             if cs not in classes:
@@ -93,6 +95,8 @@ def detect_b64s(b64_list, classes=None):
             res.append(row)
             continue
 
+        data['bboxes'] = data['bboxes'].tolist()
+        data['scores'] = data['scores'].tolist()
         data['classes'] = format_classes(data['classes'].tolist())
         for box, cs, score in zip(data['bboxes'], data['classes'], data['scores']):
             if cs not in classes:
