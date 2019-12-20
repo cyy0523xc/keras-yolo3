@@ -3,10 +3,9 @@
 #
 # Author: alex
 # Created Time: 2019年09月11日 星期三 18时12分55秒
-import numpy as np
 from PIL import Image
 from yolo import YOLO
-from utils import parse_input_image, parse_output_image, add_logo, \
+from utils import parse_input_image, parse_output_image, \
     format_input_path
 
 # 识别模型配置
