@@ -52,26 +52,7 @@ def detect_images(filenames, classes=None):
         path = format_input_path(path)
         img = parse_input_image(image_path=path, image_type=image_type)
         _, data = yolo.detect_image(img)
-        row = {
-            'bboxes': [],
-            'classes': [],
-            'scores': [],
-        }
-        if data['bboxes'] is None:
-            res.append(row)
-            continue
-
-        data['scores'] = data['scores'].tolist()
-        data['bboxes'] = format_bboxes(data['bboxes'].tolist())
-        data['classes'] = format_classes(data['classes'].tolist())
-        for box, cs, score in zip(data['bboxes'], data['classes'], data['scores']):
-            if cs not in classes:
-                continue
-            row['bboxes'].append(box)
-            row['classes'].append(cs)
-            row['scores'].append(score)
-
-        res.append(row)
+        res.append(format_output_data(data, classes))
 
     return res
 
@@ -86,26 +67,7 @@ def detect_b64s(b64_list, classes=None):
     images = [parse_input_image(image=b64) for b64 in b64_list]
     for img in images:
         _, data = yolo.detect_image(img)
-        row = {
-            'bboxes': [],
-            'classes': [],
-            'scores': [],
-        }
-        if data['bboxes'] is None:
-            res.append(row)
-            continue
-
-        data['scores'] = data['scores'].tolist()
-        data['bboxes'] = format_bboxes(data['bboxes'].tolist())
-        data['classes'] = format_classes(data['classes'].tolist())
-        for box, cs, score in zip(data['bboxes'], data['classes'], data['scores']):
-            if cs not in classes:
-                continue
-            row['bboxes'].append(box)
-            row['classes'].append(cs)
-            row['scores'].append(score)
-
-        res.append(row)
+        res.append(format_output_data(data, classes))
 
     return res
 
@@ -136,6 +98,32 @@ def detect_image(image='', image_path='', image_type='jpg', return_img=False):
         'scores': data['scores'].tolist(),
         'classes': format_classes(data['classes'].tolist()),
     }
+
+    
+def format_output_data(data, classes):
+    """格式化目标检测的返回值
+    返回的时候，会转成json
+    """
+    row = {
+        'bboxes': [],
+        'classes': [],
+        'scores': [],
+    }
+    if data['bboxes'] is None:
+        return row
+
+    data['scores'] = data['scores'].tolist()
+    data['bboxes'] = format_bboxes(data['bboxes'].tolist())
+    data['classes'] = format_classes(data['classes'].tolist())
+    for box, cs, score in zip(data['bboxes'], data['classes'], data['scores']):
+        if classes is not None and cs not in classes:
+            # 如果该值为None，则表示不过滤
+            continue
+        row['bboxes'].append(box)
+        row['classes'].append(cs)
+        row['scores'].append(score)
+
+    return row
 
 
 def get_demo_image(path):
